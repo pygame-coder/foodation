@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Food Donations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #212529, #343a40);
+            color: white;
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid d-flex">
+            <a class="navbar-brand fw-bold fs-4 me-3 border border-light rounded px-2 py-1 rounded-pill" href="/">
+                🍽️ Foodation
+            </a>
+            <a class="navbar-brand fw-bold fs-4 border border-light rounded px-2 py-1 rounded-pill" href="/home">
+                🏪 Shop Owner
+            </a>
+
+            <div class="ms-auto">
+                <a href="/" class="btn btn-outline-danger btn-sm fw-semibold rounded-pill px-3
+                      d-flex align-items-center gap-2">
+                    🔒 <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <section class="hero">
+        <h1 class="fw-bold">Food Donations</h1>
+        <p class="lead mb-0">
+            Overview of donated food items
+        </p>
+    </section>
+
+    <div class="container mt-5">
+        <div class="card shadow-lg border-0">
+            <!-- Card Header -->
+            <div class="card-header bg-dark text-light d-flex align-items-center justify-content-between">
+                <div>
+                    <h4 class="mb-0 fw-bold fs-4">🍽️ Available Food</h4>
+                    <small class="text-secondary fs-6">Overview of submitted items</small>
+                </div>
+                <span class="badge bg-success px-3 py-2 fs-6">Active</span>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle table-lg mb-0">
+                        <!-- Table Header -->
+                        <thead class="text-uppercase small table-secondary text-dark fs-6">
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th>Shop</th>
+                                <th>Donor</th>
+                                <th>Food Item</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-center">Date Donated</th>
+                                <th class="text-center">Expiration Date</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+
+                        <!-- Table Body -->
+                        <tbody>
+                            {% for donation in foodsDonated %}
+                            {% set expire_class = "bg-success text-light" %}
+                            {% if donation["days_until_expiration"] <= 2 %} {% set expire_class="bg-danger text-light"
+                                %} {% elif donation["days_until_expiration"] <=5 %} {% set
+                                expire_class="bg-warning text-dark" %} {% endif %} <tr>
+                                <td class="text-center  align-middle">
+                                    <span
+                                        class="badge bg-secondary bg-opacity-25 text-dark px-3 py-2 fs-6 text-white">{{
+                                        loop.index }}</span>
+                                </td>
+                                <td class="align-middle fs-5">{{ donation["shop name"] }}</td>
+                                <td class="align-middle fs-5">{{ donation["name of donor"] }}</td>
+                                <td class="align-middle fs-5">🍱 {{ donation["food name"] }}</td>
+                                <td class="text-center align-middle">
+                                    <span class="badge bg-info text-dark rounded-pill px-3 py-2 fs-6">{{
+                                        donation["quantity"] }}</span>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <span class="badge bg-light text-dark fs-6 px-3 py-2">{{ donation["date donated"]
+                                        }}</span>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <span class="badge {{ expire_class }} rounded-pill px-3 py-2 fs-6">{{
+                                        donation["expiration date"] }}</span>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <span class="badge {{ donation['status_class'] }} rounded-pill px-3 py-2 fs-6">{{
+                                        donation["status"] }}</span>
+                                </td>
+                                </tr>
+
+                                {% else %}
+                                <!-- No donations found -->
+                                <tr>
+                                    <td colspan="7" class="text-center py-5">
+                                        <div class="fw-semibold fs-5 text-white">
+                                            😕 No food donations found
+                                        </div>
+                                        <small class="text-secondary fs-6">
+                                            Submitted food will appear here once available
+                                        </small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                        </tbody>
+
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>

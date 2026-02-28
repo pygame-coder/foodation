@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Foodation Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      min-height: 200vh;
+    }
+
+    .navbar {
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1050;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .hero {
+      margin-top: 6rem;
+    }
+
+    .password-container {
+      position: relative;
+    }
+
+    .password-container button {
+      top: 50%;
+      transform: translateY(-50%);
+      right: 0.5rem;
+    }
+
+    .validation-icon {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      pointer-events: none;
+    }
+
+    .modal.fade .modal-dialog {
+      transform: translateY(-50px);
+      transition: transform 0.3s ease-out;
+    }
+
+    .modal.fade.show .modal-dialog {
+      transform: translateY(0);
+    }
+
+    #successToast {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 2000;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-dark py-2">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold fs-4" href="/">🍽️ Foodation</a>
+      <ul class="navbar-nav ms-auto me-3">
+        <!-- LOGIN -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle fs-5" href="#" data-bs-toggle="dropdown">Log in</a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginShop">Shop Owner</a></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginDriver">Driver</a></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginRecipient">Recipient</a>
+            </li>
+          </ul>
+        </li>
+        <!-- SIGN UP -->
+        <li class="nav-item dropdown ms-lg-3">
+          <a class="nav-link dropdown-toggle fs-5" href="#" data-bs-toggle="dropdown">Sign up</a>
+          <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#signupShop">Shop Owner</a>
+            </li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#signupDriver">Driver</a></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#signupRecipient">Recipient</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+  <!-- HERO -->
+  <div class="container hero text-center">
+    <div class="bg-dark text-white rounded-4 p-5 shadow">
+      <h1 class="fw-bold">Welcome to Foodation</h1>
+      <p class="lead mt-3">Connecting surplus food with people who need it 🤍</p>
+    </div>
+  </div>
+
+  <!-- ================= LOGIN MODALS ================= -->
+  <!-- Shop Owner -->
+  <div class="modal fade" id="loginShop" tabindex="-1">
+    <div class="modal-dialog">
+      <form class="modal-content" method="POST" action="/login">
+        <input type="hidden" name="role" value="shop_owner">
+        <div class="modal-header">
+          <h5 class="modal-title">Login – Shop Owner</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input class="form-control mb-3" name="email" type="email" placeholder="Email" required>
+          <input class="form-control" name="password" type="password" placeholder="Password" required>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary w-100">Log In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Driver Login -->
+  <div class="modal fade" id="loginDriver" tabindex="-1">
+    <div class="modal-dialog">
+      <form class="modal-content" method="POST" action="/login">
+        <input type="hidden" name="role" value="donation_driver">
+        <div class="modal-header">
+          <h5 class="modal-title">Login – Donation Driver</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input class="form-control mb-3" name="email" type="email" placeholder="Email" required>
+          <input class="form-control" name="password" type="password" placeholder="Password" required>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary w-100">Log In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Recipient Login -->
+  <div class="modal fade" id="loginRecipient" tabindex="-1">
+    <div class="modal-dialog">
+      <form class="modal-content" method="POST" action="/login">
+        <input type="hidden" name="role" value="donation_recipient">
+        <div class="modal-header">
+          <h5 class="modal-title">Login – Recipient</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input class="form-control mb-3" name="email" type="email" placeholder="Email" required>
+          <input class="form-control" name="password" type="password" placeholder="Password" required>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary w-100">Log In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= SIGN-UP MODALS ================= -->
+  <!-- Shop Owner Sign-Up -->
+  <div class="modal fade" id="signupShop" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <form class="modal-content p-3" method="POST" action="/signup">
+        <input type="hidden" name="role" value="shop_owner">
+        <div class="modal-header">
+          <h5 class="modal-title">Sign Up – Shop Owner</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body row g-3">
+          <div class="col-md-6 position-relative">
+            <input class="form-control pe-5" name="full_name" placeholder="Full Name" required id="FullName">
+            <span class="validation-icon" id="FullNameIcon"></span>
+          </div>
+          <div class="col-md-6 position-relative">
+            <input class="form-control pe-5" name="shop_name" placeholder="Shop Name" required id="ShopName">
+            <span class="validation-icon" id="ShopNameIcon"></span>
+          </div>
+          <div class="col-md-6 position-relative">
+            <input class="form-control pe-5" name="email" type="email" placeholder="Email" required id="shopEmail">
+            <span class="validation-icon" id="shopEmailIcon"></span>
+          </div>
+          <div class="col-md-6">
+            <div class="password-container">
+              <input class="form-control pe-5" name="password" type="password" placeholder="Password" required
+                id="shopPassword">
+              <button type="button"
+                class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-3"
+                onclick="togglePassword('shopPassword')">Show</button>
+            </div>
+            <div class="progress mt-2" style="height: 6px;">
+              <div id="shopStrengthBar" class="progress-bar" style="width:0%"></div>
+            </div>
+            <small id="shopStrengthText" class="text-muted">Enter a password</small>
+          </div>
+          <div class="col-12 position-relative">
+            <input class="form-control pe-5" name="address" placeholder="Address" required id="shopAddress">
+            <span class="validation-icon" id="shopAddressIcon"></span>
+          </div>
+          <div class="col-md-6 position-relative">
+            <input class="form-control pe-5" name="age" type="number" placeholder="Age" min="13" required id="shopAge">
+            <span class="validation-icon" id="shopAgeIcon"></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success w-100">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Driver Sign-Up -->
+  <div class="modal fade" id="signupDriver" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <form class="modal-content p-3" method="POST" action="/signup">
+        <input type="hidden" name="role" value="donation_driver">
+        <div class="modal-header">
+          <h5 class="modal-title">Sign Up – Donation Driver</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body row g-3">
+          <div class="col-md-6 position-relative">
+            <input class="form-control pe-5" name="full_name" placeholder="Full Name" required id="driverFullName">
+            <span class="validation-icon" id="driverNameIcon"></span>
+          </div>
+          <div class="col-md-6 position-relative">
+            <input class="form-control pe-5" name="email" type="email" placeholder="Email" required id="driverEmail">
+            <span class="validation-icon" id="driverEmailIcon"></span>
+          </div>
+          <div class="col-md-6">
+            <div class="password-container">
+              <input class="form-control pe-5" name="password" type="password" placeholder="Password" required
+                id="driverPassword">
+              <button type="button"
+                class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-3"
+                onclick="togglePassword('driverPassword')">Show</button>
+            </div>
+            <div class="progress mt-2" style="height: 6px;">
+              <div id="driverStrengthBar" class="progress-bar" style="width:0%"></div>
+            </div>
+            <small id="driverStrengthText" class="text-muted">Enter a password</small>
+          </div>
+          <div class="col-md-6 position-relative">
+            <input class="form-control pe-5" name="age" type="number" placeholder="Age" min="13" required
+              id="driverAge">
+            <span class="validation-icon" id="driverAgeIcon"></span>
+          </div>
+          <div class="col-12 position-relative">
+            <input class="form-control pe-5" name="address" placeholder="Address" required id="driverAddress">
+            <span class="validation-icon" id="driverAddressIcon"></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success w-100">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Recipient Sign-Up -->
+  <div class="modal fade" id="signupRecipient" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <form class="modal-content p-3" method="POST" action="/signup">
+        <input type="hidden" name="role" value="donation_recipient">
+        <div class="modal-header">
+          <h5 class="modal-title">Sign Up – Recipient</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body row g-3">
+          <div class="col-md-6 position-relative">
+            <input class="form-control pe-5" name="full_name" placeholder="Full Name" required id="recipientFullName">
+            <span class="validation-icon" id="recipientNameIcon"></span>
+          </div>
+          <div class="col-md-6 position-relative">
+            <input class="form-control pe-5" name="email" type="email" placeholder="Email" required id="recipientEmail">
+            <span class="validation-icon" id="recipientEmailIcon"></span>
+          </div>
+          <div class="col-md-6">
+            <div class="password-container">
+              <input class="form-control pe-5" name="password" type="password" placeholder="Password" required
+                id="recipientPassword">
+              <button type="button"
+                class="btn btn-sm btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-3"
+                onclick="togglePassword('recipientPassword')">Show</button>
+            </div>
+            <div class="progress mt-2" style="height: 6px;">
+              <div id="recipientStrengthBar" class="progress-bar" style="width:0%"></div>
+            </div>
+            <small id="recipientStrengthText" class="text-muted">Enter a password</small>
+          </div>
+          <div class="col-md-6 position-relative">
+            <input class="form-control pe-5" name="age" type="number" placeholder="Age" min="13" required
+              id="recipientAge">
+            <span class="validation-icon" id="recipientAgeIcon"></span>
+          </div>
+          <div class="col-12 position-relative">
+            <input class="form-control pe-5" name="address" placeholder="Address" required id="recipientAddress">
+            <span class="validation-icon" id="recipientAddressIcon"></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success w-100">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= SUCCESS TOAST ================= -->
+  <div class="toast align-items-center text-white bg-success border-0" id="successToast" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+        Account created successfully! ✅
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const navbar = document.getElementById("mainNavbar");
+    window.addEventListener("scroll", () => {
+      navbar.classList.toggle("scrolled", window.scrollY > 50);
+    });
+
+    function togglePassword(passwordId) {
+      const input = document.getElementById(passwordId);
+      input.type = input.type === "password" ? "text" : "password";
+    }
+
+    function setupPasswordStrength(passwordInputId, strengthBarId, strengthTextId) {
+      const passwordInput = document.getElementById(passwordInputId);
+      const strengthBar = document.getElementById(strengthBarId);
+      const strengthText = document.getElementById(strengthTextId);
+
+      passwordInput.addEventListener("input", () => {
+        const password = passwordInput.value;
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+        let percent = (strength / 5) * 100;
+        strengthBar.style.width = percent + "%";
+        strengthBar.className = "progress-bar";
+
+        if (strength <= 2) {
+          strengthBar.classList.add("bg-danger");
+          strengthText.textContent = "Weak password";
+        } else if (strength <= 4) {
+          strengthBar.classList.add("bg-warning");
+          strengthText.textContent = "Medium strength password";
+        } else {
+          strengthBar.classList.add("bg-success");
+          strengthText.textContent = "Strong password 💪";
+        }
+      });
+    }
+
+    function setupValidation(inputId, iconId, type) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+
+      input.addEventListener("input", () => {
+        let valid = false;
+        if (type === "text") valid = input.value.trim().length > 0;
+        if (type === "email") valid = /^\S+@\S+\.\S+$/.test(input.value);
+        if (type === "age") valid = parseInt(input.value) >= 13;
+        if (type === "address") valid = input.value.trim().length > 0;
+
+        icon.textContent = valid ? "✔️" : "❌";
+        icon.style.color = valid ? "green" : "red";
+      });
+    }
+
+    // Initialize all signup modals
+    const roles = ["shop", "driver", "recipient"];
+    roles.forEach(role => {
+      setupPasswordStrength(`${role}Password`, `${role}StrengthBar`, `${role}StrengthText`);
+      setupValidation(`${role}FullName`, `${role}NameIcon`, "text");
+      setupValidation(`${role}Email`, `${role}EmailIcon`, "email");
+      setupValidation(`${role}Age`, `${role}AgeIcon`, "age");
+      setupValidation(`${role}Address`, `${role}AddressIcon`, "address");
+      setupValidation("ShopName", "ShopNameIcon", "text");
+    });
+  </script>
+</body>
+
+</html>

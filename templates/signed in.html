@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Foodation - Logged In</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1050;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            /* start higher */
+            text-align: center;
+            padding-top: 10vh;
+            /* moves card higher on screen */
+        }
+
+        .card {
+            max-width: 500px;
+            width: 100%;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            background-color: #121212;
+            color: #f8f9fa;
+        }
+
+        h1 {
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #dddddd;
+        }
+
+        .user-info {
+            text-align: left;
+            margin-top: 1rem;
+        }
+
+        .user-info p {
+            margin: 0.25rem 0;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: #343a40;
+            border-color: #343a40;
+        }
+
+        .btn-primary:hover {
+            background-color: #495057;
+            border-color: #495057;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-dark py-2 shadow-sm">
+        <div class="container-fluid">
+
+            <!-- Left side: Brand + Role Action -->
+            <div class="d-flex align-items-center gap-3">
+
+                <!-- Brand -->
+                <a class="navbar-brand fw-bold fs-4 mb-0" href="/">
+                    🍽️ Foodation
+                </a>
+
+                <!-- Role-based action button -->
+                {% if session["user"]["role"] == "shop_owner" %}
+                <a href="/donate" class="btn btn-success btn-sm fw-semibold rounded-pill px-3
+          d-flex align-items-center gap-2">
+                    🍱 <span>Donate Food</span>
+                </a>
+
+                <a href="/pastdonations" class="btn btn-outline-light btn-sm fw-semibold rounded-pill px-3
+          d-flex align-items-center gap-2">
+                    📜 <span>Past Donations</span>
+                </a>
+
+                <a href="/pendingdonations" class="btn btn-outline-warning btn-sm fw-semibold rounded-pill px-3
+          d-flex align-items-center gap-2 text-light">
+                    ⏳ <span>Pending Donations</span>
+                </a>
+
+                {% elif session["user"]["role"] == "donation_driver" %}
+                <a href="/drive" class="btn btn-outline-info btn-sm fw-semibold rounded-pill px-3
+          d-flex align-items-center gap-2 text-light">
+                    🚚 <span>Pick Up Food</span>
+                </a>
+
+                <a href="/pickupget" class="btn btn-outline-success btn-sm fw-semibold rounded-pill px-3
+          d-flex align-items-center gap-2 text-light">
+                    ⏳ <span>View Pending Pickups</span>
+                </a>
+
+                {% elif session["user"]["role"] == "donation_recipient" %}
+                <a href="/recieve" class="btn btn-outline-success btn-sm fw-semibold rounded-pill px-3
+          d-flex align-items-center gap-2 text-light">
+                    🧺 <span>View Available Food</span>
+                </a>
+                {% endif %}
+
+
+            </div>
+
+            <!-- Right side: Logout -->
+            <div class="ms-auto">
+                <a href="/" class="btn btn-outline-danger btn-sm fw-semibold rounded-pill px-3
+                      d-flex align-items-center gap-2">
+                    🔒 <span>Logout</span>
+                </a>
+            </div>
+
+        </div>
+    </nav>
+
+
+
+
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+
+    <div class="content">
+        <div class="card text-center">
+            <h1>Welcome, {{ user.full_name }}!</h1>
+            <p>You are now logged in. Connecting surplus food with people who need it 🤍</p>
+
+            <div class="user-info">
+                <p><strong>Full Name:</strong> {{ user.full_name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Role:</strong> {{ user.role.replace("_", " ").title() }}</p>
+            </div>
+
+        </div>
+    </div>
+
+    {% if session["user"]["role"] == "shop_owner" %}
+
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">{totalDonatedFood}</h5>
+            <h5 class="card-title">Card title</h5>
+        </div>
+    </div>
+
+
+
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const navbar = document.getElementById("mainNavbar");
+        window.addEventListener("scroll", () => {
+            navbar.classList.toggle("scrolled", window.scrollY > 50);
+        });
+    </script>
+</body>
+
+</html>
